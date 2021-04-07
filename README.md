@@ -5,7 +5,7 @@ Grok is a two-dimensional, stack-based language inspired by Befunge and the Vim 
 
 ## Documentation
 + [Tutorial]
-+ [Command List]
++ [Instruction List]
 + [Examples]
 + [Esolang Page][Wiki]
 
@@ -21,7 +21,6 @@ usage: PyGrok.py [-h] (<script file> | -c <code>) [<options>]
     Execute a Grok script.
     Executing a script is as easy as:
         PyGrok.py <script file>
-        
     You can also execute code directly using the -c/--code flag:
         PyGrok.py -c '1z23zzq'
         > 132
@@ -44,9 +43,10 @@ options:
   -t <seconds>, --tick <seconds>
                         define a tick time, or a delay between the execution of each instruction
   -a, --always-tick     make every instruction cause a tick (delay), even whitespace and skipped instructions
+  -e, --show-errors     disable "You don't grok Grok." error message and show true error message
 ```
 
 [Tutorial]: https://github.com/AMiller42/Grok-Language/wiki/Tutorial
-[Command List]: https://github.com/AMiller42/Grok-Language/wiki/Command_List
+[Instruction List]: https://github.com/AMiller42/Grok-Language/wiki/Instruction_List
 [Examples]: https://github.com/AMiller42/Grok-language/wiki/Examples
 [Wiki]: https://esolangs.org/wiki/Grok
