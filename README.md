@@ -47,6 +47,6 @@ options:
 ```
 
 [Tutorial]: https://github.com/AMiller42/Grok-Language/wiki/Tutorial
-[Instruction List]: https://github.com/AMiller42/Grok-Language/wiki/Instruction_List
+[Instruction List]: https://github.com/AMiller42/Grok-Language/wiki/Instruction-List
 [Examples]: https://github.com/AMiller42/Grok-language/wiki/Examples
 [Wiki]: https://esolangs.org/wiki/Grok
