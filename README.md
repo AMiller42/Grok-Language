@@ -7,7 +7,7 @@ Grok is a two-dimensional, stack-based language inspired by [Befunge], [`><>`][F
 + [Tutorial]
 + [Instruction List]
 + [Examples]
-+ [Esolang Page][Wiki]
++ [Esolangs.org Wiki Page][Wiki]
 
 ---
 
