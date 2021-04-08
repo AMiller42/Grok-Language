@@ -83,9 +83,9 @@ def read_string():
         return string
     else:
         # input is redirected using pipes
-        char = sys.stdin.read(1)
+        string = input()
         # return -1 if there is no more input available
-        return char if char != "" else -1
+        return string if string != "" else -1
 
 
 class Interpreter:
