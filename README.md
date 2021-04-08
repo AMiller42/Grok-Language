@@ -1,5 +1,5 @@
 # Grok-Language
-Grok is a two-dimensional, stack-based language inspired by Befunge and the Vim editor.
+Grok is a two-dimensional, stack-based language inspired by Befunge, `><>`, and the Vim editor.
 
 ---
 
