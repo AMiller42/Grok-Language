@@ -1,5 +1,5 @@
 # Grok-Language
-Grok is a two-dimensional, stack-based language inspired by Befunge, `><>`, and the Vim editor.
+Grok is a two-dimensional, stack-based language inspired by [Befunge], [`><>`][Fish], and the [Vim editor][Vim].
 
 ---
 
@@ -50,3 +50,7 @@ options:
 [Instruction List]: https://github.com/AMiller42/Grok-Language/wiki/Instruction-List
 [Examples]: https://github.com/AMiller42/Grok-language/wiki/Examples
 [Wiki]: https://esolangs.org/wiki/Grok
+
+[Befunge]: https://esolangs.org/wiki/Befunge
+[Fish]: https://esolangs.org/wiki/Fish
+[Vim]: https://en.wikipedia.org/wiki/Vim_(text_editor)
