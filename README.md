@@ -45,6 +45,9 @@ options:
   -a, --always-tick     make every instruction cause a tick (delay), even whitespace and skipped instructions
   -e, --show-errors     disable "You don't grok Grok." error message and show true error message
 ```
+---
+
+The official specification can be found at [Esolangs.org][Wiki]
 
 [Tutorial]: https://github.com/AMiller42/Grok-Language/wiki/Tutorial
 [Instruction List]: https://github.com/AMiller42/Grok-Language/wiki/Instruction-List
