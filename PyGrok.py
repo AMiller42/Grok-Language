@@ -5,7 +5,7 @@ Modified from official ><> interpereter found at https://gist.github.com/anonymo
 Python interpreter for the esoteric language Grok.
 Usage: ./Grok.py --help
 More information: http://esolangs.org/wiki/Grok
-Requires python 2.7/3.2 or higher.
+Requires python 3 or higher.
 """
 
 import sys
