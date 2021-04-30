@@ -70,14 +70,17 @@ def read_string():
         sys.stdout.flush()
         while (True): # while character isn't carriage return or line feed
             char = getch()
-            if ord(char) == 3:  #check for ctrl-c (break)
+            if ord(char) == 3: # check for ctrl-c (break)
                 sys.stdout.write("^C")
                 sys.stdout.flush()
                 raise KeyboardInterrupt
-            if ord(char) in {10, 13}:
+            if ord(char) in {10, 13}: # check for \n and/or \r
                 break
+            if ord(char) in {8, 127}: # check for BS or DEL
+                string = string[:-1]
+                char = ""
             string += str(char)
-            sys.stdout.write(char)
+            sys.stdout.write("\033[2K\r> " + string)
             sys.stdout.flush()
         sys.stdout.write("\n")
         return string
