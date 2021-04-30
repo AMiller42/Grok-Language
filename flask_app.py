@@ -13,9 +13,9 @@ def index():
     comments.append(request.form["contents"])
     return redirect(url_for('index'))
                         
-@app.route('/commit', methods=["GET", "POST"])
+@app.route('/commit', methods=["POST"])
 def webhook():
-    if request.method in ["GET", "POST"]:
+    if request.method in ["POST"]:
         repo = git.Repo('/home/Grok/grok_online')
         origin = repo.remotes.origin
         origin.pull()
