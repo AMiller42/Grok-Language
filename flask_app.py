@@ -12,13 +12,12 @@ def index():
 
     comments.append(request.form["contents"])
     return redirect(url_for('index'))
-    
-@app.route('/commit', methods=["POST"])
+                        
+@app.route('/commit', methods=["GET", "POST"])
 def webhook():
-    if request.method == "POST":
+    if request.method in ["GET", "POST"]:
         repo = git.Repo('/home/Grok/grok_online')
         origin = repo.remotes.origin
         origin.pull()
         return 'Updated PythonAnywhere successfully', 200
-    else:
-        return 'Wrong event type', 400
+    return 'Wrong event type', 400
