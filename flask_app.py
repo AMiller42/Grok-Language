@@ -17,14 +17,14 @@ os.system("mkdir sessions")
 sessions = {}
 terminated = set()
 
-@app.route('/', methods=('POST','GET'))
+@app.route('/', methods=['POST','GET'])
 def index():
     session = secrets.token_hex(64)
     sessions[session] = None
     return render_template('main.html', session=session)
 
 
-@app.route("/execute", methods=('POST'))
+@app.route("/execute", methods=['POST'])
 def execute():
     flags = request.form['flags']
     code = request.form['code'].replace("\r", "")
@@ -83,7 +83,7 @@ def execute():
     return val
 
 
-@app.route("/kill", methods=("POST",))
+@app.route("/kill", methods=['POST'])
 def kill():
   session = request.form["session"]
   if sessions.get(session) is None: return ""
@@ -92,7 +92,7 @@ def kill():
   return ""
 
 
-@app.route('/commit', methods=["POST"])
+@app.route('/commit', methods=['POST'])
 def webhook():
     if request.method in ["POST"]:
         repo = git.Repo('/home/Grok/grok_online')
