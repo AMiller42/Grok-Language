@@ -62,7 +62,14 @@ getch = _Getch()
 
 def read_string():
     #Read one character from stdin. Returns 0 when no input is available.
-    if sys.stdin.isatty():
+    if global online:
+        # we're online, take input from the input box
+        try:
+            string = global input.pop(0)
+        except:
+            string = "0"
+        return string
+    elif sys.stdin.isatty():
         # we're in console, read a character from the user
         char = " " 
         string = ""
@@ -79,8 +86,6 @@ def read_string():
             elif ord(char) in {8, 127}: # check for BS or DEL
                 if string:
                     string = string[:-1]
-                char = ""
-            elif ord(char) not in range(32,127):
                 char = ""
             string += str(char)
             sys.stdout.write("\033[2K\r> " + string)
@@ -473,8 +478,52 @@ class StopExecution(Exception):
     def __init__(self, message = None):
         self.message = message
 
+def execute(code, flags, inputs, output_var) {
+    out = output_var
+    out[1] = ""
+    out[2] = ""
+    flags = flags
+    global online = True
+    global input = inputs.split("\n")
+    
+    interpreter = Interpreter(code)
+    
+    if flags:
+        if 't' in flags:
+            tick = 0.5
+        if 'a' in flags:
+            always_tick = True
+        if 'e' in flags:
+            interpereter._debug = True
+        if 'h' in flags:
+            out[1] = """
+ALL flags should be used as is (no '-' prefix)
+\tt\tSet delay between commands to 0.5 seconds
+\ta\tEnable delay between every  instruction, including whitespace and skipped instructions
+\te\tEnable more detailed error messages
+\th\tOutput this help message and exit
+\t5\tMake the interpreter timeout after 5 seconds
+\tf\tMake the interpreter timeout after 10 seconds
+\tF\tMake the interpreter timeout after 15 seconds
+\tb\tMake the interpreter timeout after 30 seconds
+\tB\tMake the interpreter timeout after 120 seconds
+"""
+            return
+            
+    while True:
+        try:
+            instr = interpreter.move()
+        except StopExecution as stop:
+            if stop.message:
+                return stop.message
+        
+        if instr and not instr == " " or arguments.always_tick:
+            time.sleep(arguments.tick)
+}
+
 if __name__ == "__main__":
     import argparse
+    global online = False
 
     parser = argparse.ArgumentParser(description="""
     Execute a Grok script.

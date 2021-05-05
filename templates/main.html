@@ -89,6 +89,9 @@
 
         function resizeCodeBox(id) {
             // Resize the code box with the given id
+			if (id == "all") {
+				["code", "inputs", "output"].forEach(id => resizeCodeBox(id));
+			}
             var element = document.getElementById(id);
             element.style.height = "";
             element.style.height = element.scrollHeight + 4 + "px";
@@ -173,7 +176,7 @@ ${code}
 		}
 		
 		function expandBoxes(){
-			["flag", "inputs", "output", "extra"].forEach(function(n) {
+			["flag", "inputs", "extra"].forEach(function(n) {
 				var boxToExpand = document.getElementById(n + "-detail");
 				var actualBox = document.getElementById(n);
 
@@ -228,7 +231,7 @@ ${code}
             $("#run_button").on("click", e => {do_run();});
 			
 			$("#clear").on("click", e => {
-				code.value = ""; stdin.value = ""; output.value = ""; extra.value = ""; updateCount()
+				code.value = ""; stdin.value = ""; output.value = ""; extra.value = ""; updateCount(); resizeCodeBox('all')
 			});
 
         });

@@ -24,11 +24,10 @@ def index():
     return render_template('main.html', session=session)
 
 
-@app.route("/execute", methods=('POST',))
+@app.route("/execute", methods=('POST'))
 def execute():
-    print(sessions)
     flags = request.form['flags']
-    code = request.form['code']
+    code = request.form['code'].replace("\r", "")
     input_list = request.form["inputs"].replace("\r", "")
     session = request.form["session"]
 
@@ -49,12 +48,14 @@ def execute():
 
             if "5" in flags:
                 time = 5
-            elif "T" in flags:
+            elif "f" in flags:
                 time = 10
-            elif "b" in flags:
+            elif "F" in flags:
                 time = 15
-            elif "B" in flags:
+            elif "b" in flags:
                 time = 30
+            elif "B" in flags:
+                time = 120
             else:
                 time = 60
             ret[1] = ""
