@@ -519,8 +519,7 @@ ALL flags should be used as is (no '-' prefix)
         try:
             instr = interpreter.move()
         except StopExecution as stop:
-            if stop.message:
-                out[2] = stop.message
+            return
         
         if instr and not instr == " " or arguments.always_tick:
             time.sleep(arguments.tick)
