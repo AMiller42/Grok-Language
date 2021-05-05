@@ -62,10 +62,12 @@ getch = _Getch()
 
 def read_string():
     #Read one character from stdin. Returns 0 when no input is available.
-    if global online:
+    global online
+    if online:
         # we're online, take input from the input box
         try:
-            string = global input.pop(0)
+            global input
+            string = input.pop(0)
         except:
             string = "0"
         return string
@@ -478,13 +480,15 @@ class StopExecution(Exception):
     def __init__(self, message = None):
         self.message = message
 
-def execute(code, flags, inputs, output_var) {
+def execute(code, flags, inputs, output_var):
     out = output_var
     out[1] = ""
     out[2] = ""
     flags = flags
-    global online = True
-    global input = inputs.split("\n")
+    global online
+    online = True
+    global input
+    input = inputs.split("\n")
     
     interpreter = Interpreter(code)
     
@@ -519,11 +523,12 @@ ALL flags should be used as is (no '-' prefix)
         
         if instr and not instr == " " or arguments.always_tick:
             time.sleep(arguments.tick)
-}
+
 
 if __name__ == "__main__":
     import argparse
-    global online = False
+    global online
+    online = False
 
     parser = argparse.ArgumentParser(description="""
     Execute a Grok script.
