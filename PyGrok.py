@@ -62,11 +62,9 @@ getch = _Getch()
 
 def read_string():
     #Read one character from stdin. Returns 0 when no input is available.
-    global online
     if online:
         # we're online, take input from the input box
         try:
-            global input
             string = input.pop(0)
         except:
             string = "0"
@@ -468,9 +466,12 @@ class Interpreter:
         Output a string without a newline appended.
         """
         output = str(output)
-        self._newline = output.endswith("\n")
-        sys.stdout.write(output)
-        sys.stdout.flush()
+        if online:
+            out[1] += output
+        else:
+            self._newline = output.endswith("\n")
+            sys.stdout.write(output)
+            sys.stdout.flush()
 
 
 class StopExecution(Exception):
@@ -519,7 +520,7 @@ ALL flags should be used as is (no '-' prefix)
             instr = interpreter.move()
         except StopExecution as stop:
             if stop.message:
-                return stop.message
+                out[2] = stop.message
         
         if instr and not instr == " " or arguments.always_tick:
             time.sleep(arguments.tick)
