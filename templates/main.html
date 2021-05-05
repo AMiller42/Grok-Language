@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Permissions-Policy" content="interest-cohort=()"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Grok Interpreter</title>
+    <style>
+        .right {
+            float: right;
+            display: flex;
+        }
+
+        .left {
+            float: right;
+            display: flex;
+        }
+
+        button {
+		border: none !important;
+            color: white;
+
+        }
+        body {
+            background-color: #2d392d;
+            color: #C0C0C0;
+        }
+
+        pre {
+            overflow-x: auto;
+            white-space: pre-wrap;
+            white-space: -moz-pre-wrap;
+            white-space: -pre-wrap;
+            white-space: -o-pre-wrap;
+            word-wrap: break-word;
+        }
+
+        input, textarea {
+			color: white;
+            background-color: #181a1b !important;
+            font-family: 'Ubuntu Mono', monospace;
+			font-size: 16px;
+            min-height: 1em !important;
+            height: 1em;
+        }
+
+        textarea {
+            width: 100%;
+        }
+
+        details, div {
+            color: white;
+            font-size: large;
+            font-family: 'Ubuntu';
+			cursor: default;
+        }
+        
+        summary {
+            padding-bottom: 10px;
+        }
+
+        h1 {
+            font-family: 'Ubuntu', sans-serif;
+			font-size: large;	
+        }
+
+        a {
+            text-decoration: none !important;
+            color: white !important;
+        }
+		
+		#output, #extra {
+			cursor: default;
+		}
+		
+		session-code {
+			display: none;
+		}
+		
+    </style>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" integrity="sha512-EZLkOqwILORob+p0BXZc+Vm3RgJBOe1Iq/0fiI7r/wJgzOFZMlsqTa29UEl6v6U6gsV4uIpsNZoV32YZqrCRCQ==" crossorigin="anonymous" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&family=Ubuntu:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" type="image/jpg" href="https://github.com/AMiller42/Grok-Language/templates/favicon.png" />
+    <script>
+        this.prevQuery = "";
+
+        function resizeCodeBox(id) {
+            // Resize the code box with the given id
+            var element = document.getElementById(id);
+            element.style.height = "";
+            element.style.height = element.scrollHeight + 4 + "px";
+        }
+
+        function updateCount() {
+            var byte_box = document.getElementById("code-count");
+            var code = document.getElementById("code").value.length;
+
+            byte_box.innerText = `Code: ${code} byte` + "s".repeat(code != 1);
+        }
+
+        function generateURL() {
+            var flags = document.getElementById("flag").value;
+            var code = document.getElementById("code").value;
+            var inputs = document.getElementById("inputs").value;
+            var undone_url = "?flags=" + flags + "&code=" + encodeURIComponent(code) + "&inputs=" + encodeURIComponent(inputs);
+
+            var url = "http://lyxal.pythonanywhere.com" + undone_url
+            url = url.replace(/\(/g, "%28")
+            url = url.replace(/\[/g, "%5B")
+            url = url.replace(/\]/g, "%5D")
+            url = url.replace(/\)/g, "%29")
+            return url
+
+        }
+
+        function shareOptions(shareType) {
+            var code = document.getElementById("code").value
+            var url = generateURL()
+            var flags = document.getElementById("flag").value
+            var flag_appendage = ","
+            if (flags) {
+                flag_appendage = " `" + flags + "`,"
+            }
+            var output = ""
+            switch (shareType) {
+                case "permalink":
+                    output = url;
+                    break;
+                case "cmc":
+                    output = `[Grok, ${code.length} byte${"s".repeat(code.length != 1)}](${url})`;
+                    break;
+                case "post-template":
+                    output = `# [Grok](https://github.com/AMiller42/Grok-Language)${flag_appendage} ${code.length} byte${"s".repeat(code.length != 1)}
+                    
+\`\`\`
+${code}
+\`\`\`
+[Try it Online!](${url})`;
+                    break
+                case "markdown":
+                    output = `[Try it Online!](${url})`;
+                    break
+            }
+            var outputBox = document.getElementById("output");
+            outputBox.value = output;
+            copyToClipboard("output");
+			resizeCodeBox("output");
+        }
+
+        function decodeURL() {
+            const queryString = window.location.search;
+            console.log(queryString);
+            const urlParams = new URLSearchParams(queryString)
+            code = urlParams.get("code");
+            flags = urlParams.get("flags");
+            inputs = urlParams.get("inputs");
+
+            var flag_box = document.getElementById("flag");
+            var code_box = document.getElementById("code");
+            var inputs_box = document.getElementById("inputs");
+
+            if ((code || flags || inputs) && !(flag_box.value || code_box.value || inputs_box.value)) {
+                flag_box.value = flags;
+                code_box.value = code;
+                inputs_box.value = inputs;
+                run_button.click();
+            } else {
+                expandBoxes()
+			}
+		}
+		
+		function expandBoxes(){
+			["flag", "inputs", "output", "extra"].forEach(function(n) {
+				var boxToExpand = document.getElementById(n + "-detail");
+				var actualBox = document.getElementById(n);
+
+				if (actualBox.value) {
+					boxToExpand.open = true;
+					resizeCodeBox(n);
+
+
+				} else {
+					boxToExpand.open = false;
+				}
+
+
+            });
+        }
+
+        function copyToClipboard(arg) {
+            var el = document.getElementById(arg);
+            el.select();
+            document.execCommand("copy");
+        }
+		
+        $(document).ready(e => {
+            const run = document.getElementById("run_button");
+            const session = $("session-code")[0].innerHTML;
+            const code = document.getElementById("code");
+            const stdin = document.getElementById("inputs");
+            const flags = document.getElementById("flag");
+            const output = document.getElementById("output");
+            const extra = document.getElementById("extra");
+
+            function do_run() {
+                if (!run.innerHTML.includes("fa-spin")) {
+                run.innerHTML = '<svg class="fa-spin" style="width:36px;height:36px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z" /></svg>';
+                $.post("/execute", {
+                    code: code.value,
+                    inputs: stdin.value,
+                    flags: flags.value,
+                    session: session,
+                    footer: footer.value,
+                    header: header.value
+                }, res => {
+                    output.value = res.stdout;
+                    extra.value = res.stderr;
+                    run.innerHTML = '<svg style="width:34px;height:34px" viewBox="0 0 24 24"><path fill="currentColor" d="M8.5,8.64L13.77,12L8.5,15.36V8.64M6.5,5V19L17.5,12" /></svg>';
+                    expandBoxes();
+                });
+                } else {
+					$.post("/kill", { session: session }, res => 0);
+                }
+        };
+            $("#run_button").on("click", e => {do_run();});
+			
+			$("#clear").on("click", e => {
+				code.value = ""; stdin.value = ""; output.value = ""; extra.value = ""; updateCount()
+			});
+
+        });
+    </script>
+</head>
+
+<body onload="decodeURL(); updateCount(); resizeCodeBox('code')">
+    <session-code>{{session}}</session-code>
+        <h1 style="display: inline-block;"><a href="https://github.com/AMiller42/Grok-Language">Grok</a></h1>
+		
+        <button id="run_button" title="Run Program" type="button" style="color:white"><svg style="width:36px;height:36px" viewBox="0 0 18 20">
+            <path fill="currentColor" d="M8.5,8.64L13.77,12L8.5,15.36V8.64M6.5,5V19L17.5,12" /></svg></button>
+			
+        <button id="permalink" title="Generate Permalink" type="button" style="color: white" onclick="shareOptions('permalink')"><svg style="width:30px;height:30px" viewBox="0 0 24 24">
+			<path fill="currentColor" d="M10.59,13.41C11,13.8 11,14.44 10.59,14.83C10.2,15.22 9.56,15.22 9.17,14.83C7.22,12.88 7.22,9.71 9.17,7.76V7.76L12.71,4.22C14.66,2.27 17.83,2.27 19.78,4.22C21.73,6.17 21.73,9.34 19.78,11.29L18.29,12.78C18.3,11.96 18.17,11.14 17.89,10.36L18.36,9.88C19.54,8.71 19.54,6.81 18.36,5.64C17.19,4.46 15.29,4.46 14.12,5.64L10.59,9.17C9.41,10.34 9.41,12.24 10.59,13.41M13.41,9.17C13.8,8.78 14.44,8.78 14.83,9.17C16.78,11.12 16.78,14.29 14.83,16.24V16.24L11.29,19.78C9.34,21.73 6.17,21.73 4.22,19.78C2.27,17.83 2.27,14.66 4.22,12.71L5.71,11.22C5.7,12.04 5.83,12.86 6.11,13.65L5.64,14.12C4.46,15.29 4.46,17.19 5.64,18.36C6.81,19.54 8.71,19.54 9.88,18.36L13.41,14.83C14.59,13.66 14.59,11.76 13.41,10.59C13,10.2 13,9.56 13.41,9.17Z" /></svg></button>
+        
+		<button id="post-template" title="Generate Code Golf Submission" type="button" style="color: white" onclick="shareOptions('post-template')">
+		<svg style="width:36px;height:36px" viewBox="0 0 16 20">
+			<path d="m 4.5168423,2.1911896 h 4.9772756 v 1.965047 H 4.5086283 Z m 4.9858516,0 2.1334581,3.0884112 a 1.2823883,1.2823883 0 0 1 0.03328,1.4076459 L 8.9708507,11.014441 H 6.2192793 L 9.5021924,2.1911896 Z"
+				fill="currentColor"/>
+			<path d="m 7.0054359,19.484617 a 3.9305221,3.9305221 0 1 0 0,-7.861044 3.9305221,3.9305221 0 1 0 0,7.861044 z m 0,-7.209582 a 3.2792804,3.2792804 0 1 0 0,6.558557 3.2792804,3.2792804 0 0 0 0,-6.558557 z m -2.5224635,3.279069 a 2.522885,2.522885 0 1 1 5.0453475,0 2.522885,2.522885 0 0 1 -5.0453475,0 z M 2.3747343,5.2796008 4.5086283,2.1911896 6.6160106,7.8546365 5.4332238,11.014441 H 5.0403894 L 2.3418243,6.6872467 a 1.2823883,1.2823883 0 0 1 0.032959,-1.4076459 z m 3.8445958,5.7348402 h 1.572213 L 7.0075693,8.9079154 Z"
+				fill-rule="evenodd"
+				fill="currentColor"/></svg>
+        
+		<button id="markdown" title="Generate Inline Markdown" type="button" style="color: white" onclick="shareOptions('markdown')"><svg style="width:30px;height:30px" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M2,3H8V5H4V19H8V21H2V3M7,17V15H9V17H7M11,17V15H13V17H11M15,17V15H17V17H15M22,3V21H16V19H20V5H16V3H22Z" /></svg></button>
+			
+		<button id="clear" title="Clear all fields" style="color:white"><svg style="width:24px;height:24px" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 2A10 10 0 1 0 22 12A10 10 0 0 0 12 2M18 11H13L14.81 9.19A3.94 3.94 0 0 0 12 8A4 4 0 1 0 15.86 13H17.91A6 6 0 1 1 12 6A5.91 5.91 0 0 1 16.22 7.78L18 6Z" /></svg></button>
+
+        <details id="flag-detail">
+            <summary>Flags</summary>
+            <input type="text" name="flags" id="flag" style="min-height: 2em;"></input>
+        </details>
+
+        <details open id="code-detail">
+            <summary id="code-count">Code: 0 bytes</summary>
+            <textarea id="code" name="code" oninput="resizeCodeBox('code'); updateCount()" onkeyup="updateCount()"></textarea>
+        </details>
+
+        <details open id="inputs-detail">
+            <summary>Inputs</summary>
+            <textarea id="inputs" name="inputs" oninput="resizeCodeBox('inputs')"></textarea>
+        </details>
+
+        <div style="display: inline-block;">Output</div>
+            <button class="copy-btn" onclick="copyToClipboard('output')" style="color: white; height:auto; display: inline-block;" type="button">click to copy</button>
+            <textarea id="output" value="" readonly style="white-space: pre-wrap; width: 100%"></textarea>
+
+        <details id="extra-detail">
+            <summary>Debug</summary>
+            <textarea value="" id="extra" readonly style="white-space: pre-wrap; width: 100%"></textarea>
+        </details>
+
+    </form>
+</body>

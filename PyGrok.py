@@ -61,7 +61,7 @@ getch = _Getch()
 
 
 def read_string():
-    #Read one character from stdin. Returns -1 when no input is available.
+    #Read one character from stdin. Returns 0 when no input is available.
     if sys.stdin.isatty():
         # we're in console, read a character from the user
         char = " " 
@@ -74,21 +74,26 @@ def read_string():
                 sys.stdout.write("^C")
                 sys.stdout.flush()
                 raise KeyboardInterrupt
-            if ord(char) in {10, 13}: # check for \n and/or \r
+            elif ord(char) in {10, 13}: # check for \n and/or \r
                 break
-            if ord(char) in {8, 127}: # check for BS or DEL
-                string = string[:-1]
+            elif ord(char) in {8, 127}: # check for BS or DEL
+                if string:
+                    string = string[:-1]
+                char = ""
+            elif ord(char) not in range(32,127):
                 char = ""
             string += str(char)
             sys.stdout.write("\033[2K\r> " + string)
             sys.stdout.flush()
         sys.stdout.write("\n")
+        if not string:
+            string = "0"
         return string
     else:
         # input is redirected using pipes
         string = input()
-        # return -1 if there is no more input available
-        return string if string != "" else -1
+        # return 0 if there is no more input available
+        return string if string != "" else 0
 
 
 class Interpreter:
