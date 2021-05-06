@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, url_for, flash, redirect
-from flask_cors import CORS 
+from flask import Flask, render_template, request
+from flask_cors import CORS
 import multiprocessing, secrets
 import PyGrok
 import git
@@ -39,7 +39,7 @@ def execute():
 
     with open(f"sessions/{session}/.stdin", "w", encoding="utf-8") as f:
       f.write(input_list)
-    
+
     with open(f"sessions/{session}/.stdin", "r", encoding="utf-8") as x:
       with open(f"sessions/{session}/.stdout", "w", encoding="utf-8") as y:
         with open(f"sessions/{session}/.stderr", "w", encoding="utf-8") as z:
@@ -63,17 +63,14 @@ def execute():
             sessions[session] = multiprocessing.Process(target=PyGrok.execute, args=(code, flags, input_list, ret))
             sessions[session].start()
             sessions[session].join(time)
-            
-            if session in terminated:
-                terminated.remove(session)
-                ret[2] += "\nSession terminated upon user request"
+
 
             if sessions[session].is_alive():
 
                 sessions[session].kill()
                 if 2 in ret:
                     ret[2] += "\n" + f"Code timed out after {time} seconds"
-            output = ret[1]
+
             y.write(ret[1])
             z.write(ret[2])
     with open(f"sessions/{session}/.stdout", "r", encoding="utf-8") as x:
@@ -81,15 +78,6 @@ def execute():
             val = {"stdout": x.read(), "stderr": y.read()}
     shutil.rmtree(f"sessions/{session}", ignore_errors=True)
     return val
-
-
-@app.route("/kill", methods=['POST'])
-def kill():
-  session = request.form["session"]
-  if sessions.get(session) is None: return ""
-  sessions[session].kill()
-  terminated.add(session)
-  return ""
 
 
 @app.route('/commit', methods=['POST'])

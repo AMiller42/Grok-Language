@@ -22,7 +22,7 @@ DIRECTIONS = { "l": (1,0), "h": (-1,0), "j": (0,1), "k": (0,-1) }
 
 class _Getch:
     """
-    Provide cross-platform getch functionality. Shamelessly stolen from 
+    Provide cross-platform getch functionality. Shamelessly stolen from
     http://code.activestate.com/recipes/134892/
     """
     def __init__(self):
@@ -65,13 +65,13 @@ def read_string():
     if online:
         # we're online, take input from the input box
         try:
-            string = input.pop(0)
+            string = inputs.pop(0)
         except:
             string = "0"
         return string
     elif sys.stdin.isatty():
         # we're in console, read a character from the user
-        char = " " 
+        char = " "
         string = ""
         sys.stdout.write("> ")
         sys.stdout.flush()
@@ -115,7 +115,7 @@ class Interpreter:
         lines = code.split("\n")
         if lines[0][:2] == "#!":
             code = "\n".join(lines[1:])
-        
+
         # construct a 2D defaultdict to contain the code
         self._wordbox = defaultdict(lambda: defaultdict(int))
         line_n = char_n = 0
@@ -126,11 +126,11 @@ class Interpreter:
             else:
                 char_n = 0
                 line_n += 1
-        
+
 
         self._position = [-1,0]
         self._direction = DIRECTIONS["l"]
-        
+
         # are we in debug mode? (real error messages displayed)
         self._debug = False
 
@@ -141,14 +141,15 @@ class Interpreter:
         self._num_entered = False
         # have we encountered a skip instruction?
         self._skip = False
-        
+
         self._insert_string = ""
 
         self._stack = []
 
         # is the last outputted character a newline?
         self._newline = None
-    
+
+
     def move(self):
         """
         Move one step in the execution process, and handle the instruction (if
@@ -165,14 +166,14 @@ class Interpreter:
         elif self._position[1] < 0:
             # if we're above the top, move to the bottom
             self._position[1] = max(self._wordbox.keys())
-        
+
         if self._direction[0] == 1 and self._position[0] > max(self._wordbox[self._position[1]].keys()):
             # wrap to the beginning if we are beyond the last character on a line and moving rightwards
             self._position[0] = 0;
         elif self._position[0] < 0:
             # also wrap if we reach the left hand side
             self._position[0] = max(self._wordbox[self._position[1]].keys())
-        
+
         # execute the instruction found
         if not self._skip:
             instruction = int(self._wordbox[self._position[1]][self._position[0]])
@@ -201,9 +202,9 @@ class Interpreter:
                 except Exception as e:
                     raise StopExecution("You don't grok Grok.")
             return instruction
-        
+
         self._skip = False
-    
+
     def _handle_instruction(self, instruction):
         """
         Execute an instruction.
@@ -211,7 +212,7 @@ class Interpreter:
         if instruction == None:
             # error on invalid characters
             raise Exception
-        
+
 
         # handle insert mode
         if self._string_mode == "insert" and instruction != "`":
@@ -235,7 +236,7 @@ class Interpreter:
             self._insert_string = ""
             self._string_mode = None
 
-        
+
         # handle regin mode
         elif self._string_mode == "regin" and instruction != "`":
             if instruction in NCHARS:        # if the instruction is a number, push it and continue in regin
@@ -272,12 +273,12 @@ class Interpreter:
         # instruction is 0-9, push corresponding int value
         elif instruction in NCHARS:
             self._push(int(instruction))
-        
+
         # instruction is an arithmetic operator
         elif instruction in ARITHMETIC:
             a, b = self._pop(), self._pop()
             exec("self._push(b{}a)".format(instruction))
-        
+
         # division
         elif instruction == "/":
             a, b = self._pop(), self._pop()
@@ -287,7 +288,7 @@ class Interpreter:
             except OverflowError:
                 pass
             self._push(b/a)
-        
+
         # comparison operators
         elif instruction in COMPARISON:
             a, b = self._pop(), self._pop()
@@ -322,7 +323,7 @@ class Interpreter:
         # duplicate register value to the stack
         elif instruction == "P":
             self._push(self._register)
-         
+
         # remove top of stack
         elif instruction == "x":
             self._pop()
@@ -330,7 +331,7 @@ class Interpreter:
         # remove register value
         elif instruction == "X":
             self._register = 0
-         
+
         # remove a values from stack, or push to register if a == 0
         elif instruction == "d":
             a = self._pop()
@@ -351,7 +352,7 @@ class Interpreter:
                     self._direction = DIRECTIONS["k"]
                 elif d == DIRECTIONS["k"]:
                     self._direction = DIRECTIONS["l"]
-        
+
         # rotate pointer left
         elif instruction == "{":
             d = self._direction
@@ -369,7 +370,7 @@ class Interpreter:
         # pop and output as character
         elif instruction == "w":
             self._output(chr(int(self._pop())))
-        
+
         # pop from register and output as character
         elif instruction == "W":
             self._output(chr(int(self._register)))
@@ -401,11 +402,11 @@ class Interpreter:
                 i = i[::-1]
                 for char in i:
                     self._push(ord(char))
-        
+
         # the end
         elif instruction == "q":
             raise StopExecution()
-        
+
         # space is NOP
         elif instruction == " ":
             pass
@@ -413,7 +414,7 @@ class Interpreter:
         # invalid instruction
         else:
             raise Exception("Invalid instruction", instruction)
-    
+
     def _push(self, value, index=None):
         """
         Push a value to the stack.
@@ -421,7 +422,7 @@ class Interpreter:
             index -- the index to push/insert to. (default: end of stack)
         """
         self._stack.insert(len(self._stack) if index == None else index, value)
-        
+
     def _pop(self, index=None):
         """
         Pop and return a value from the current stack.
@@ -460,14 +461,16 @@ class Interpreter:
         """
         return read_string()
 
-    
+
     def _output(self, output):
         """
         Output a string without a newline appended.
         """
+        global online
+        global out
         output = str(output)
         if online:
-            out[1] += output
+           out[1] += output
         else:
             self._newline = output.endswith("\n")
             sys.stdout.write(output)
@@ -481,32 +484,28 @@ class StopExecution(Exception):
     def __init__(self, message = None):
         self.message = message
 
-def execute(code, flags, inputs, output_var):
+def execute(code, flags, input_list, output_var):
+    global out
+    global online
+    global inputs
     out = output_var
     out[1] = ""
     out[2] = ""
     flags = flags
-    global online
     online = True
-    global input
-    input = inputs.split("\n")
-    
+    inputs = input_list.split("\n")
+
     interpreter = Interpreter(code)
-    
+
     if flags:
-        if 't' in flags:
-            tick = 0.5
-        if 'a' in flags:
-            always_tick = True
         if 'e' in flags:
-            interpereter._debug = True
+            interpreter._debug = True
         if 'h' in flags:
             out[1] = """
-ALL flags should be used as is (no '-' prefix)
-\tt\tSet delay between commands to 0.5 seconds
-\ta\tEnable delay between every  instruction, including whitespace and skipped instructions
+Flags should be used without a '-' prefix
 \te\tEnable more detailed error messages
 \th\tOutput this help message and exit
+
 \t5\tMake the interpreter timeout after 5 seconds
 \tf\tMake the interpreter timeout after 10 seconds
 \tF\tMake the interpreter timeout after 15 seconds
@@ -514,15 +513,18 @@ ALL flags should be used as is (no '-' prefix)
 \tB\tMake the interpreter timeout after 120 seconds
 """
             return
-            
+
+
     while True:
         try:
             instr = interpreter.move()
         except StopExecution as stop:
+            out[2] += stop.message
             return
-        
-        if instr and not instr == " " or arguments.always_tick:
-            time.sleep(arguments.tick)
+        except Exception as e:
+            out[2] += f"{e}"
+            return
+
 
 
 if __name__ == "__main__":
@@ -539,58 +541,58 @@ if __name__ == "__main__":
         > 132
     The -v and -s flags can be used to prepopulate the stack:
         %(prog)s echo.grk -s "hello, world" -v 32 49 50 51 -s "456"
-        > hello, world 123456""", usage="""%(prog)s [-h] (<script file> | -c <code>) [<options>]""", 
+        > hello, world 123456""", usage="""%(prog)s [-h] (<script file> | -c <code>) [<options>]""",
     formatter_class=argparse.RawDescriptionHelpFormatter)
-    
+
     group = parser.add_argument_group("code")
     # group script file and --code together to only allow one
     code_group = group.add_mutually_exclusive_group(required=True)
-    code_group.add_argument("script", 
-                            type=argparse.FileType("r"), 
-                            nargs="?", 
+    code_group.add_argument("script",
+                            type=argparse.FileType("r"),
+                            nargs="?",
                             help=".grk file to execute")
-    code_group.add_argument("-c", "--code", 
-                            metavar="<code>", 
+    code_group.add_argument("-c", "--code",
+                            metavar="<code>",
                             help="string of instructions to execute")
-    
+
     options = parser.add_argument_group("options")
-    options.add_argument("-s", "--string", 
-                         action="append", 
-                         metavar="<string>", 
-                         dest="stack")
-    options.add_argument("-v", "--value", 
-                         type=float, 
-                         nargs="+", 
+    options.add_argument("-s", "--string",
                          action="append",
-                         metavar="<number>",  
-                         dest="stack", 
+                         metavar="<string>",
+                         dest="stack")
+    options.add_argument("-v", "--value",
+                         type=float,
+                         nargs="+",
+                         action="append",
+                         metavar="<number>",
+                         dest="stack",
                          help="push numbers or strings onto the stack before execution starts")
-    options.add_argument("-t", "--tick", 
+    options.add_argument("-t", "--tick",
                          type=float,
                          default=0.0,
                          metavar="<seconds>",
                          help="define a tick time, or a delay between the execution of each instruction")
     options.add_argument("-a", "--always-tick",
-                         action="store_true", 
+                         action="store_true",
                          default=False,
-                         dest="always_tick", 
+                         dest="always_tick",
                          help="make every instruction cause a tick (delay), even whitespace and skipped instructions")
     options.add_argument("-e", "--show-errors",
                          action="store_true",
                          default=False,
                          dest="show_errors",
                          help="disable \"You don't grok Grok.\" error message and show true error message")
-    
+
     # parse arguments from sys.argv
     arguments = parser.parse_args()
-    
+
     # initialize an interpreter
     if arguments.script:
         code = arguments.script.read()
         arguments.script.close()
     else:
         code = arguments.code
-    
+
     interpreter = Interpreter(code)
 
     if arguments.show_errors:
@@ -613,7 +615,7 @@ if __name__ == "__main__":
                 # only print a newline if the script didn't
                 newline = ("\n" if (not interpreter._newline) and interpreter._newline != None else "")
                 parser.exit(message=(newline+stop.message+"\n") if stop.message else newline)
-            
+
             if instr and not instr == " " or arguments.always_tick:
                 time.sleep(arguments.tick)
     except KeyboardInterrupt:
