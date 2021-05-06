@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-Modified from official ><> interpereter found at https://gist.github.com/anonymous/6392418
+Modified from official ><> interpreter found at https://gist.github.com/anonymous/6392418
 Python interpreter for the esoteric language Grok.
 Usage: ./Grok.py --help
 More information: http://esolangs.org/wiki/Grok
@@ -133,6 +133,9 @@ class Interpreter:
 
         # are we in debug mode? (real error messages displayed)
         self._debug = False
+        
+        # are we using integer division?
+        self._int_div = False
 
         # the register is initially empty
         self._register = 0
@@ -282,12 +285,16 @@ class Interpreter:
         # division
         elif instruction == "/":
             a, b = self._pop(), self._pop()
-            # try converting them to floats for python 2 compability
-            try:
-                a, b = float(a), float(b)
-            except OverflowError:
-                pass
-            self._push(b/a)
+            if self._int_div:
+                a, b = int(a), int(b)
+                self._push(b//a)
+            else:
+                # try converting them to floats for python 2 compability
+                try:
+                    a, b = float(a), float(b)
+                except OverflowError:
+                    pass
+                self._push(b/a)
 
         # comparison operators
         elif instruction in COMPARISON:
@@ -498,11 +505,14 @@ def execute(code, flags, input_list, output_var):
     interpreter = Interpreter(code)
 
     if flags:
+        if 'd' in flags:
+            interpreter._int_div = True
         if 'e' in flags:
             interpreter._debug = True
         if 'h' in flags:
             out[1] = """
 Flags should be used without a '-' prefix
+\td\tUse integer division instead of float division
 \te\tEnable more detailed error messages
 \th\tOutput this help message and exit
 
@@ -555,18 +565,29 @@ if __name__ == "__main__":
                             metavar="<code>",
                             help="string of instructions to execute")
 
-    options = parser.add_argument_group("options")
-    options.add_argument("-s", "--string",
+    setup = parser.add_argument_group("setup")
+    setup.add_argument("-s", "--string",
                          action="append",
                          metavar="<string>",
                          dest="stack")
-    options.add_argument("-v", "--value",
+    setup.add_argument("-v", "--value",
                          type=float,
                          nargs="+",
                          action="append",
                          metavar="<number>",
                          dest="stack",
                          help="push numbers or strings onto the stack before execution starts")
+    options = parser.add_argument_group("options")
+    options.add_argument("-d", "--int-divide",
+                         action="store_true",
+                         default=False,
+                         dest="int_div",
+                         help="enable integer division instead of float division")
+    options.add_argument("-n", "--no-newline",
+                         action="store_true",
+                         default=False,
+                         dest="no_newline",
+                         help="disable implicit trailing newline outputted at the end of execution")
     options.add_argument("-t", "--tick",
                          type=float,
                          default=0.0,
@@ -597,6 +618,9 @@ if __name__ == "__main__":
 
     if arguments.show_errors:
         interpreter._debug = True
+    if arguments.int_div:
+        interpreter._int_div = True
+
 
     # add supplied values to the interpreters stack
     if arguments.stack:
@@ -612,8 +636,8 @@ if __name__ == "__main__":
             try:
                 instr = interpreter.move()
             except StopExecution as stop:
-                # only print a newline if the script didn't
-                newline = ("\n" if (not interpreter._newline) and interpreter._newline != None else "")
+                # only print a newline if the script didn't and it hasn't been disabled
+                newline = ("\n" if (not interpreter._newline) and interpreter._newline != None and (not arguments.no_newline) else "")
                 parser.exit(message=(newline+stop.message+"\n") if stop.message else newline)
 
             if instr and not instr == " " or arguments.always_tick:
