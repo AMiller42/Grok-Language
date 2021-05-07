@@ -10,6 +10,8 @@ Grok is a two-dimensional, stack-based language inspired by [Befunge], [`><>`][F
 + [Online Interpreter]
 + [Esolangs.org Wiki Page][Wiki]
 
+The [Issues] page lists planned/possible additions to the language and/or interpreter, as well as known bugs. If you come across any undocumented bugs, feel free to make a note of them and I'll squash them.
+
 ---
 
 ## Getting Started
@@ -55,6 +57,7 @@ The official specification can be found at [Esolangs.org][Wiki]
 [Examples]: https://github.com/AMiller42/Grok-language/wiki/Examples
 [Online Interpreter]: http://grok.pythonanywhere.com
 [Wiki]: https://esolangs.org/wiki/Grok
+[Issues]: https://github.com/AMiller42/Grok-Language/issues
 
 [Befunge]: https://esolangs.org/wiki/Befunge
 [Fish]: https://esolangs.org/wiki/Fish
