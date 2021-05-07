@@ -67,7 +67,7 @@ def execute():
 
             if sessions[session].is_alive():
 
-                sessions[session].kill()
+                sessions[session].terminate()
                 if 2 in ret:
                     ret[2] += "\n" + f"Code timed out after {time} seconds"
 
