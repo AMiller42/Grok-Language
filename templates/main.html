@@ -230,6 +230,12 @@ ${code}
 			});
 
         });
+		
+		document.addEventListener('keydown', (event) => {
+			if (event.ctrlKey == 1 && event.keyCode == 13) {
+				$("#run_button").click();
+			}
+		});
     </script>
 </head>
 
