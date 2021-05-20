@@ -251,6 +251,7 @@ class Interpreter:
                 if self._num_entered:
                     self._register = int(self._register)
                     self._num_entered = False
+                    self._handle_instruction(instruction)
                 else:
                     self._register = ord(instruction)  # if not a number and is first instruction in regin,
                     return                             # push it and end regin mode
