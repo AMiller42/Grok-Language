@@ -317,11 +317,11 @@ class Interpreter:
         # duplicate ath value on stack to the register
         elif instruction == "y":
             a = self._pop()
-            self._register = self._copy(len(self._stack)-(1+a))
+            self._register = self._copy(-(1+a))
 
         # duplicate top of stack to the register
         elif instruction == "Y":
-            self._register = self._copy()
+            self._register = self._copy(-1)
 
         # pop register value and push it to the stack
         elif instruction == "p":
@@ -447,7 +447,7 @@ class Interpreter:
             value = int(value)
         return value
 
-    def _copy(self, index=None):
+    def _copy(self):
         """
         Copy and return a value from the stack.
         Keyword arguments:
@@ -455,7 +455,7 @@ class Interpreter:
         """
         # if there are no values to copy, return 0
         try:
-            value = self._stack[(len(self._stack)-1 if index == None else index)]
+            value = self._stack[index]
         except IndexError:
             value = 0
         # convert to int where possible to avoid float overflow
