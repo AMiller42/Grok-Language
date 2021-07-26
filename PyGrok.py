@@ -447,7 +447,7 @@ class Interpreter:
             value = int(value)
         return value
 
-    def _copy(self):
+    def _copy(self, index):
         """
         Copy and return a value from the stack.
         Keyword arguments:
