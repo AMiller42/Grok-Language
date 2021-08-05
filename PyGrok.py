@@ -517,10 +517,10 @@ Flags should be used without a '-' prefix
 \te\tEnable more detailed error messages
 \th\tOutput this help message and exit
 
-\t5\tMake the interpreter timeout after 5 seconds
 \tf\tMake the interpreter timeout after 10 seconds
 \tF\tMake the interpreter timeout after 15 seconds
 \tb\tMake the interpreter timeout after 30 seconds
+\tT\tMake the interpreter timeout after 60 seconds
 \tB\tMake the interpreter timeout after 120 seconds
 """
             return
