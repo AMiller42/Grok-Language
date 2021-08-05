@@ -46,18 +46,19 @@ def execute():
             manager = multiprocessing.Manager()
             ret = manager.dict()
 
-            if "5" in flags:
-                time = 5
             elif "f" in flags:
                 time = 10
             elif "F" in flags:
                 time = 15
             elif "b" in flags:
                 time = 30
+            elif "T" in flags:
+                time = 60
             elif "B" in flags:
                 time = 120
             else:
-                time = 60
+                time = 5
+                
             ret[1] = ""
             ret[2] = ""
             sessions[session] = multiprocessing.Process(target=PyGrok.execute, args=(code, flags, input_list, ret))
