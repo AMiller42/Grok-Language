@@ -46,7 +46,7 @@ def execute():
             manager = multiprocessing.Manager()
             ret = manager.dict()
 
-            elif "f" in flags:
+            if "f" in flags:
                 time = 10
             elif "F" in flags:
                 time = 15
