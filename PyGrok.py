@@ -231,7 +231,10 @@ class Interpreter:
                     is_num = False
                     break
             if is_num:
-                self._push(int(string))
+                try:
+                    self._push(int(string))
+                except:    # for empty string, push nothing
+                    pass
             else:
                 string = string[::-1]
                 for char in string:
